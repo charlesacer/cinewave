@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineWave | Free Streaming</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Supabase JS Client Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header>
+    <div class="logo">Cine<span>Wave</span></div>
+    <nav>
+      <a href="#" class="nav-link active" onclick="showPage('home')">Home</a>
+      <a href="#" class="nav-link" onclick="showPage('series')">Series</a>
+      <a href="#" class="nav-link" onclick="showPage('movies')">Movie</a>
+      <a href="#" class="nav-link" onclick="showPage('about')">About</a>
+    </nav>
+  </header>
+
+  <!-- HOME PAGE VIEW -->
+  <main id="page-home">
+    <section class="hero">
+      <div class="hero-content">
+        <h1>The Midnight Protocol</h1>
+        <p>A rogue hacker uncovers an encryption program capable of altering reality. Stream it exclusively on CineWave.</p>
+        <button class="btn-primary" onclick="loadWatchPage('https://drive.google.com/file/d/1A2B3C4D5E/preview', 'The Midnight Protocol')">Watch Now</button>
+      </div>
+    </section>
+
+    <section class="catalog-section">
+      <h2 class="section-title">Latest Uploads</h2>
+      <div class="grid" id="catalog-grid">
+        <!-- Videos from Supabase will dynamically appear here -->
+      </div>
+    </section>
+  </main>
+
+  <!-- WATCH / PLAYER PAGE VIEW (Hidden by default) -->
+  <main id="page-watch" style="display: none;">
+    <div class="watch-container">
+      <div class="video-player-wrapper">
+        <div class="iframe-container">
+          <iframe id="video-frame" src="" allow="autoplay" allowfullscreen></iframe>
+        </div>
+        <h2 id="video-title" style="margin-top: 1rem;">Video Title</h2>
+      </div>
+
+      <!-- Realtime Chat Box -->
+      <div class="chat-wrapper">
+        <div class="chat-header">Live Chat</div>
+        <div class="chat-messages" id="chat-messages">
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Welcome to the chat!</p>
+        </div>
+        <div class="chat-input-area">
+          <input type="text" id="chat-input" placeholder="Type a message...">
+          <button class="btn-primary" style="margin: 0; padding: 0.5rem 1rem;">Send</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
