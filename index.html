@@ -1,68 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CineWave | Free Streaming</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- Supabase JS Client Library -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body>
-
-  <!-- Navigation Bar -->
-  <header>
-    <div class="logo">Cine<span>Wave</span></div>
-    <nav>
-      <a href="#" class="nav-link active" onclick="showPage('home')">Home</a>
-      <a href="#" class="nav-link" onclick="showPage('series')">Series</a>
-      <a href="#" class="nav-link" onclick="showPage('movies')">Movie</a>
-      <a href="#" class="nav-link" onclick="showPage('about')">About</a>
-    </nav>
-  </header>
-
-  <!-- HOME PAGE VIEW -->
-  <main id="page-home">
-    <section class="hero">
-      <div class="hero-content">
-        <h1>The Midnight Protocol</h1>
-        <p>A rogue hacker uncovers an encryption program capable of altering reality. Stream it exclusively on CineWave.</p>
-        <button class="btn-primary" onclick="loadWatchPage('https://drive.google.com/file/d/1A2B3C4D5E/preview', 'The Midnight Protocol')">Watch Now</button>
-      </div>
-    </section>
-
-    <section class="catalog-section">
-      <h2 class="section-title">Latest Uploads</h2>
-      <div class="grid" id="catalog-grid">
-        <!-- Videos from Supabase will dynamically appear here -->
-      </div>
-    </section>
-  </main>
-
-  <!-- WATCH / PLAYER PAGE VIEW (Hidden by default) -->
-  <main id="page-watch" style="display: none;">
-    <div class="watch-container">
-      <div class="video-player-wrapper">
-        <div class="iframe-container">
-          <iframe id="video-frame" src="" allow="autoplay" allowfullscreen></iframe>
-        </div>
-        <h2 id="video-title" style="margin-top: 1rem;">Video Title</h2>
-      </div>
-
-      <!-- Realtime Chat Box -->
-      <div class="chat-wrapper">
-        <div class="chat-header">Live Chat</div>
-        <div class="chat-messages" id="chat-messages">
-          <p style="color: var(--text-muted); font-size: 0.9rem;">Welcome to the chat!</p>
-        </div>
-        <div class="chat-input-area">
-          <input type="text" id="chat-input" placeholder="Type a message...">
-          <button class="btn-primary" style="margin: 0; padding: 0.5rem 1rem;">Send</button>
-        </div>
-      </div>
+<!-- ADMIN PAGE VIEW -->
+<main id="page-admin" style="display: none;">
+  <div class="admin-container">
+    <h2>Admin Dashboard: Add New Video</h2>
+    
+    <!-- Simple Security Pin -->
+    <div id="admin-login-box">
+      <p>Enter Admin Secret Pin:</p>
+      <input type="password" id="admin-pin-input" placeholder="Secret PIN">
+      <button class="btn-primary" onclick="checkAdminPin()">Login</button>
     </div>
-  </main>
 
-  <script src="app.js"></script>
-</body>
-</html>
+    <!-- Upload Form (Hidden until PIN is correct) -->
+    <form id="admin-form" style="display: none; margin-top: 1.5rem;" onsubmit="uploadVideo(event)">
+      <div class="form-group">
+        <label>Video Title</label>
+        <input type="text" id="video-title-input" placeholder="e.g., The Midnight Protocol" required>
+      </div>
+
+      <div class="form-group">
+        <label>Google Drive File ID</label>
+        <input type="text" id="video-drive-id-input" placeholder="e.g., 1a2b3c4d5e6f..." required>
+        <small style="color: var(--text-muted);">Extract the ID from your Google Drive link.</small>
+      </div>
+
+      <div class="form-group">
+        <label>Category</label>
+        <select id="video-category-input">
+          <option value="Movie">Movie</option>
+          <option value="Series">Series</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Thumbnail Image URL</label>
+        <input type="url" id="video-thumb-input" placeholder="https://image-link.jpg">
+      </div>
+
+      <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">Upload Video to Database</button>
+      <p id="admin-status" style="margin-top: 1rem; color: var(--accent-color);"></p>
+    </form>
+  </div>
+</main>
