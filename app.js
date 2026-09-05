@@ -113,3 +113,43 @@ async function loadChatMessages(videoId) {
     chatContainer.appendChild(p);
   });
 }
+// Secret Admin Passcode (Change '1234' to your preferred PIN)
+const ADMIN_SECRET_PIN = '1234';
+
+function checkAdminPin() {
+  const enteredPin = document.getElementById('admin-pin-input').value;
+  if (enteredPin === ADMIN_SECRET_PIN) {
+    document.getElementById('admin-login-box').style.display = 'none';
+    document.getElementById('admin-form').style.display = 'block';
+  } else {
+    alert("Incorrect Admin PIN!");
+  }
+}
+
+// Function to handle database upload
+async function uploadVideo(event) {
+  event.preventDefault(); // Prevent page reload
+  
+  const statusText = document.getElementById('admin-status');
+  statusText.innerText = "Uploading to database...";
+
+  const title = document.getElementById('video-title-input').value;
+  const drive_file_id = document.getElementById('video-drive-id-input').value;
+  const category = document.getElementById('video-category-input').value;
+  const thumbnail_url = document.getElementById('video-thumb-input').value;
+
+  // Insert into Supabase
+  const { data, error } = await supabase
+    .from('videos')
+    .insert([
+      { title, drive_file_id, category, thumbnail_url }
+    ]);
+
+  if (error) {
+    console.error('Error adding video:', error);
+    statusText.innerText = "Error uploading video.";
+  } else {
+    statusText.innerText = "Video successfully added!";
+    document.getElementById('admin-form').reset();
+  }
+}
