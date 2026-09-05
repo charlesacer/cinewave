@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineWave Admin — Manage Content</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* Specific styles for the 2-column Admin UI */
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 5%;
+      background-color: #0b0b0e;
+      border-bottom: 1px solid #1f1f2e;
+    }
+    .admin-nav a {
+      color: #a0a0b0;
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .admin-nav a.active {
+      color: var(--accent-color);
+      border-bottom: 2px solid var(--accent-color);
+      padding-bottom: 0.3rem;
+    }
+    .admin-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      padding: 2rem 5% 1rem 5%;
+    }
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      padding: 0 5% 3rem 5%;
+    }
+    .admin-card {
+      background-color: #14141d;
+      border: 1px solid #222232;
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+    .card-subtitle {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b6b80;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+    .card-heading {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .admin-card label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #d0d0e0;
+    }
+    .admin-card input[type="text"],
+    .admin-card input[type="number"],
+    .admin-card select,
+    .admin-card textarea {
+      width: 100%;
+      background-color: #0a0a0e;
+      border: 1px solid #2a2a3c;
+      color: #fff;
+      padding: 0.8rem;
+      border-radius: 6px;
+      font-family: inherit;
+      margin-bottom: 1.2rem;
+    }
+    .admin-card input:focus, .admin-card select:focus, .admin-card textarea:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.2rem;
+    }
+    .checkbox-group input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent-color);
+    }
+    .file-upload-box {
+      background-color: #0a0a0e;
+      border: 1px solid #2a2a3c;
+      padding: 0.8rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .btn-full {
+      width: 100%;
+      padding: 0.8rem;
+      background-color: var(--accent-color);
+      color: #000;
+      border: none;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    .btn-secondary {
+      background-color: #222232;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    @media (max-width: 900px) {
+      .admin-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="admin-header">
+    <div class="logo">Cine<span>Wave</span> Admin</div>
+    <nav class="admin-nav">
+      <a href="#">Dashboard</a>
+      <a href="#" class="active">Create Content</a>
+      <a href="#">Existing Content</a>
+      <a href="index.html">Sign Out</a>
+    </nav>
+  </header>
+
+  <h1 class="admin-title">Manage content</h1>
+
+  <!-- 2-Column Form Layout -->
+  <form id="content-form" onsubmit="handleSaveContent(event)">
+    <div class="admin-grid">
+
+      <!-- LEFT COLUMN: CONTENT DETAILS -->
+      <div class="admin-card">
+        <div class="card-subtitle">Content Details</div>
+        <div class="card-heading">Create content</div>
+
+        <div class="form-row">
+          <div>
+            <label>Content type</label>
+            <select id="content-type">
+              <option value="Movie">Movie</option>
+              <option value="Series">Series</option>
+            </select>
+          </div>
+          <div>
+            <label>Category</label>
+            <input type="text" id="category" placeholder="e.g. Drama, Action, Sci-Fi">
+          </div>
+        </div>
+
+        <label>Title</label>
+        <input type="text" id="title" placeholder="Enter title" required>
+
+        <label>Description</label>
+        <textarea id="description" rows="6" placeholder="Enter description..."></textarea>
+
+        <label>Video source URL</label>
+        <input type="text" id="video-url" placeholder="Google Drive share link or direct MP4 URL" required>
+      </div>
+
+      <!-- RIGHT COLUMN: PUBLISH & POSTER -->
+      <div>
+        <!-- Publish Settings -->
+        <div class="admin-card" style="margin-bottom: 1.5rem;">
+          <div class="card-heading">Publish</div>
+
+          <label>Release year</label>
+          <input type="number" id="release-year" placeholder="e.g. 2024">
+
+          <div class="checkbox-group">
+            <label style="margin: 0;">Featured</label>
+            <input type="checkbox" id="is-featured">
+          </div>
+        </div>
+
+        <!-- Poster Settings -->
+        <div class="admin-card">
+          <div class="card-heading">Poster</div>
+
+          <label>Horizontal poster URL / Image Link</label>
+          <input type="text" id="poster-url" placeholder="https://image-link.com/poster.jpg">
+
+          <p style="font-size: 0.75rem; color: #6b6b80; margin-bottom: 1.5rem;">
+            Recommended: 1280 × 720 pixels, maximum 5 MB.
+          </p>
+
+          <div class="checkbox-group">
+            <label style="margin: 0;">Published</label>
+            <input type="checkbox" id="is-published" checked>
+          </div>
+
+          <button type="submit" class="btn-full">Save content</button>
+          <p id="status-msg" style="margin-top: 0.8rem; font-size: 0.85rem; text-align: center; color: var(--accent-color);"></p>
+        </div>
+      </div>
+
+    </div>
+  </form>
+
+  <script>
+    // Supabase Credentials
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function handleSaveContent(e) {
+      e.preventDefault();
+      const status = document.getElementById('status-msg');
+      status.innerText = "Saving content...";
+
+      const title = document.getElementById('title').value;
+      const category = document.getElementById('category').value;
+      const contentType = document.getElementById('content-type').value;
+      const description = document.getElementById('description').value;
+      const rawUrl = document.getElementById('video-url').value.trim();
+      const poster = document.getElementById('poster-url').value;
+
+      // Clean Google Drive URL to extract File ID automatically
+      let drive_file_id = rawUrl;
+      const match = rawUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      if (match && match[1]) {
+        drive_file_id = match[1];
+      }
+
+      const { data, error } = await supabase
+        .from('videos')
+        .insert([
+          { 
+            title: title, 
+            category: category || contentType, 
+            description: description, 
+            drive_file_id: drive_file_id, 
+            thumbnail_url: poster 
+          }
+        ]);
+
+      if (error) {
+        console.error(error);
+        status.style.color = '#ff4d4d';
+        status.innerText = "Error saving content.";
+      } else {
+        status.style.color = '#00f2fe';
+        status.innerText = "Content saved successfully!";
+        document.getElementById('content-form').reset();
+      }
+    }
+  </script>
+</body>
+</html>
